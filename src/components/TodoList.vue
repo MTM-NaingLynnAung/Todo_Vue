@@ -29,7 +29,7 @@
             <a href="#completed" @click="completed">Completed</a>
           </li>
         </ul>
-        <span class=""><a href="#">Clear Completed</a></span>
+        <span class="col-3"><a href="javascript:void(0)" @click="clear" v-show="completeItem.length > 0">Clear Completed</a></span>
       </div>
 
     
@@ -39,8 +39,7 @@
 export default {
   data() {
     return {
-      todos: [
-      ],
+      todos: [],
       newItem: '',
     }
   },
@@ -89,6 +88,9 @@ export default {
       document.querySelectorAll("#done").forEach(e => {
         e.classList.remove('none')
       })
+    },
+    clear() {
+      this.todos = this.activeItem
     }
   },
   computed: {
@@ -96,7 +98,24 @@ export default {
       return this.todos.filter(element => {
         return element.complete == false
       });
-      
+    },
+    completeItem() {
+      return this.todos.filter(element => {
+        return element.complete == true
+      })
+    }
+  },
+  mounted() {  
+    if (localStorage.getItem('todos')) {
+      this.todos = JSON.parse(localStorage.getItem('todos'))
+    }
+  },
+  watch: {
+    todos: {
+      handler() {
+        localStorage.setItem('todos', JSON.stringify(this.todos))
+      },
+      deep: true
     }
   }
 }
